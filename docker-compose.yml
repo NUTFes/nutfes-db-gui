@@ -10,6 +10,7 @@ services:
 
   postgres:
     image: postgres
+    container_name: "postgres"
     restart: always
     # set shared memory limit when using docker-compose
 
@@ -24,40 +25,42 @@ services:
       - ./settings/env/postgres.env
     volumes:
       - ./postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
 
   pgadmin:
     image: dpage/pgadmin4:6.11
     container_name: "pgadmin"
-    ports:
-      - 8080:80
-    volumes:
-      - ./pgadmin:/var/lib/pgadmin
     env_file:
       -  ./settings/env/pgadmin.env
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
     depends_on:
       - postgres
-  # DBの環境
+    ports:
+      - 8080:80
 
+  # DBの環境
   mysql:
-    container_name: "mysql"
     image: mysql:8.0
+    container_name: "mysql"
     restart: always
     env_file:
       - ./settings/env/mysql.env
     volumes:
       - ./mysql:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - 3306:3306
 
   # DBのGUI機能の環境
   phpmyadmin:
-    container_name: "phpmyadmin"
     image: phpmyadmin/phpmyadmin
-    depends_on:
-      - mysql
+    container_name: "phpmyadmin"
     env_file:
       - ./settings/env/phpmyadmin.env
     volumes:
       - ./phpmyadmin/sessions:/sessions
+    depends_on:
+      - mysql
     ports:
-      - "3307:80"
+      - 3307:80
