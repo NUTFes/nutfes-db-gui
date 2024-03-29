@@ -1,0 +1,28 @@
+version: "3"
+services:
+  # DBの環境
+  db:
+    container_name: "db"
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_USER: gidaifes
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+      TZ: "Asia/Tokyo"
+    ports:
+      - "3306:3306"
+
+  # DBのGUI機能の環境
+  phpmyadmin:
+    container_name: "phpmyadmin"
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOSTS=db
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    ports:
+      - "3307:80"
