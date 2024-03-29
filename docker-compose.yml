@@ -22,16 +22,14 @@ services:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     env_file:
       - ./settings/env/postgres.env
-    # environment:
-    #   POSTGRES_USER: bingo
-    #   POSTGRES_PASSWORD: example
-
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4:6.11
     container_name: "pgadmin"
     ports:
-      - 808:80
+      - 8080:80
     volumes:
       - ./pgadmin:/var/lib/pgadmin
     env_file:
@@ -39,6 +37,7 @@ services:
     depends_on:
       - postgres
   # DBの環境
+
   mysql:
     container_name: "mysql"
     image: mysql:8.0
