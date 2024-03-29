@@ -1,20 +1,52 @@
 version: "3"
 services:
+
   cloudflare:
     image: "cloudflare/cloudflared:latest"
     container_name: "cloudflare"
-    volumes: ["./web/prod:/home/nonroot/.cloudflared"]
+    volumes:
+      - ./web/prod:/home/nonroot/.cloudflared
     command: tunnel run
+
+  postgres:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+
+    # shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    # volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    env_file:
+      - ./settings/env/postgres.env
+    # environment:
+    #   POSTGRES_USER: bingo
+    #   POSTGRES_PASSWORD: example
+
+
+  pgadmin:
+    image: dpage/pgadmin4:6.11
+    container_name: "pgadmin"
+    ports:
+      - 808:80
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    env_file:
+      -  ./settings/env/pgadmin.env
+    depends_on:
+      - postgres
   # DBの環境
-  db:
-    container_name: "db"
+  mysql:
+    container_name: "mysql"
     image: mysql:8.0
     restart: always
-    environment:
-      MYSQL_USER: gidaifes
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: root
-      TZ: "Asia/Tokyo"
+    env_file:
+      - ./settings/env/mysql.env
+    volumes:
+      - ./mysql:/var/lib/mysql
     ports:
       - "3306:3306"
 
@@ -23,12 +55,10 @@ services:
     container_name: "phpmyadmin"
     image: phpmyadmin/phpmyadmin
     depends_on:
-      - db
-    environment:
-      - PMA_ARBITRARY=1
-      - PMA_HOSTS=db
-      - PMA_USER=root
-      - PMA_PASSWORD=root
+      - mysql
+    env_file:
+      - ./settings/env/phpmyadmin.env
+    volumes:
+      - ./phpmyadmin/sessions:/sessions
     ports:
       - "3307:80"
-
