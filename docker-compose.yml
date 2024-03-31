@@ -1,6 +1,5 @@
 version: "3"
 services:
-
   postgres:
     image: postgres
     container_name: "postgres"
@@ -25,7 +24,7 @@ services:
     image: dpage/pgadmin4:6.11
     container_name: "pgadmin"
     env_file:
-      -  ./settings/env/pgadmin.env
+      - ./settings/env/pgadmin.env
     volumes:
       - ./pgadmin:/var/lib/pgadmin
     depends_on:
@@ -57,3 +56,13 @@ services:
       - mysql
     ports:
       - 3307:80
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9001"
+    volumes:
+      - ./minio/data:/data
+    command: "server /data --console-address :9001"
+    env_file:
+      - ./settings/env/minio.env
