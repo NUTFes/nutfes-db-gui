@@ -1,5 +1,11 @@
 version: "3"
 services:
+  cloudflare:
+    image: "cloudflare/cloudflared:latest"
+    container_name: "nutfes-finansu-web"
+    volumes: ["./cloudflare/prod:/home/nonroot/.cloudflared"]
+    command: tunnel run
+
   postgres:
     image: postgres
     container_name: "postgres"
