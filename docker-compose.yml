@@ -71,6 +71,6 @@ services:
       - "9001:9001"
     volumes:
       - ./minio/data:/data
-    command: "server /data --address :9000 --console-address :9001"
+    command: "server /data --console-address :9001"
     env_file:
       - ./settings/env/minio.env
